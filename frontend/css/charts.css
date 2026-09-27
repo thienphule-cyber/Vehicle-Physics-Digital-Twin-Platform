@@ -1,0 +1,16 @@
+/*
+  Styling for chart containers used across simulation/analysis/
+  comparison pages.
+*/
+
+.chart-container {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-container canvas {
+  max-height: 280px;
+}

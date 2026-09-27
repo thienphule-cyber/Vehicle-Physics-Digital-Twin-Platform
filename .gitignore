@@ -1,0 +1,48 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------- Node / npm (in case any tooling is added later) ----------
+node_modules/
+
+# ---------- Runtime / process files (from start.sh / stop.sh) ----------
+.run/
+
+# ---------- Auto-generated frontend config ----------
+frontend/js/config.js
+
+# ---------- Environment / secrets ----------
+.env
+.env.local
+*.pem
+*.key
+
+# ---------- OS files ----------
+.DS_Store
+Thumbs.db
+
+# ---------- Editor files ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---------- Data (real vehicle data may be private / large) ----------
+data/real_vehicle_data/*
+!data/real_vehicle_data/.gitkeep
+data/exports/*
+!data/exports/.gitkeep
+
+# ---------- Logs ----------
+*.log

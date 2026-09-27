@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Dynamics Simulation - Phase 2/3/4</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/charts.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <h1>Vehicle Dynamics Simulation</h1>
+  <p class="subtitle">Phase 2: vehicle dynamics. Phase 3: ICE. Phase 4: BEV and Hybrid powertrains.</p>
+
+  <section id="vehicle-inputs">
+    <h2>Vehicle Parameters</h2>
+
+    <label>
+      Mass (kg)
+      <input type="number" id="mass" value="1600" step="1">
+    </label>
+
+    <label>
+      Wheel radius (m)
+      <input type="number" id="wheelRadius" value="0.34" step="0.01">
+    </label>
+
+    <label>
+      Drag coefficient Cd (-)
+      <input type="number" id="dragCoefficient" value="0.29" step="0.01">
+    </label>
+
+    <label>
+      Frontal area A (m^2)
+      <input type="number" id="frontalArea" value="2.2" step="0.01">
+    </label>
+
+    <label>
+      Rolling resistance coefficient Crr (-)
+      <input type="number" id="rollingCoefficient" value="0.012" step="0.001">
+    </label>
+  </section>
+
+  <section id="environment-inputs">
+    <h2>Environment</h2>
+
+    <label>
+      Air density (kg/m^3)
+      <input type="number" id="airDensity" value="1.225" step="0.001">
+    </label>
+
+    <label>
+      Road grade (degrees)
+      <input type="number" id="roadGradeDeg" value="0" step="0.1">
+    </label>
+
+    <label>
+      Wind speed (m/s)
+      <input type="number" id="windSpeed" value="0" step="0.1">
+    </label>
+  </section>
+
+  <section id="cycle-inputs">
+    <h2>Drive Cycle</h2>
+
+    <label>
+      Drive cycle
+      <select id="driveCycleSelect">
+        <option value="simple_test_cycle">Simple test cycle</option>
+      </select>
+    </label>
+  </section>
+
+  <section id="ice-powertrain-inputs">
+    <h2>ICE Powertrain</h2>
+
+    <label>
+      Max engine torque (N·m)
+      <input type="number" id="iceMaxTorque" value="250" step="1">
+    </label>
+
+    <label>
+      Max engine power (kW)
+      <input type="number" id="iceMaxPower" value="110" step="1">
+    </label>
+
+    <label>
+      Gear ratio (-)
+      <input type="number" id="iceGearRatio" value="3.5" step="0.1">
+    </label>
+
+    <label>
+      Final drive ratio (-)
+      <input type="number" id="iceFinalDrive" value="3.9" step="0.1">
+    </label>
+
+    <label>
+      Transmission efficiency (0-1)
+      <input type="number" id="iceTransEff" value="0.92" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Engine efficiency (0-1)
+      <input type="number" id="iceEngineEff" value="0.30" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Fuel type
+      <select id="iceFuelType">
+        <option value="gasoline">Gasoline</option>
+        <option value="diesel">Diesel</option>
+      </select>
+    </label>
+  </section>
+
+  <section id="motor-inputs">
+    <h2>Electric Motor (used by BEV and Hybrid)</h2>
+
+    <label>
+      Max motor torque (N·m)
+      <input type="number" id="motorMaxTorque" value="300" step="1">
+    </label>
+
+    <label>
+      Max motor power (kW)
+      <input type="number" id="motorMaxPower" value="150" step="1">
+    </label>
+
+    <label>
+      Gear ratio (-)
+      <input type="number" id="motorGearRatio" value="9.0" step="0.1">
+    </label>
+
+    <label>
+      Final drive ratio (-)
+      <input type="number" id="motorFinalDrive" value="1.0" step="0.1">
+    </label>
+
+    <label>
+      Transmission efficiency (0-1)
+      <input type="number" id="motorTransEff" value="0.95" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Motor efficiency (0-1)
+      <input type="number" id="motorEff" value="0.92" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Inverter efficiency (0-1)
+      <input type="number" id="inverterEff" value="0.97" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Regen efficiency (0-1)
+      <input type="number" id="regenEff" value="0.7" step="0.01" min="0" max="1">
+    </label>
+  </section>
+
+  <section id="battery-inputs">
+    <h2>Battery (used by BEV and Hybrid)</h2>
+
+    <label>
+      Capacity (kWh) — used as BEV battery
+      <input type="number" id="batteryCapacityBev" value="60" step="1">
+    </label>
+
+    <label>
+      Initial SOC (0-1)
+      <input type="number" id="batteryInitialSoc" value="0.7" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Min SOC (0-1)
+      <input type="number" id="batteryMinSoc" value="0.1" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Max SOC (0-1)
+      <input type="number" id="batteryMaxSoc" value="1.0" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Internal efficiency (0-1)
+      <input type="number" id="batteryInternalEff" value="0.95" step="0.01" min="0" max="1">
+    </label>
+  </section>
+
+  <section id="hybrid-inputs">
+    <h2>Hybrid Control (used by Hybrid only)</h2>
+
+    <label>
+      Hybrid battery capacity (kWh)
+      <input type="number" id="hybridBatteryCapacity" value="1.5" step="0.1">
+    </label>
+
+    <label>
+      Electric-only power threshold (kW)
+      <input type="number" id="electricOnlyThreshold" value="15" step="1">
+    </label>
+
+    <label>
+      Motor assist fraction (0-1)
+      <input type="number" id="motorAssistFraction" value="0.3" step="0.05" min="0" max="1">
+    </label>
+  </section>
+
+  <div class="button-row">
+    <button id="runBtn">Run Vehicle Dynamics</button>
+    <button id="runIceBtn">Run ICE</button>
+    <button id="runBevBtn">Run BEV</button>
+    <button id="runHybridBtn">Run Hybrid</button>
+  </div>
+  <p id="errorMessage" class="error"></p>
+
+  <section id="summary">
+    <h2>Summary — Vehicle Dynamics</h2>
+    <table id="summaryTable">
+      <tbody>
+        <tr><td>Duration (s)</td><td id="sumDuration">-</td></tr>
+        <tr><td>Distance (km)</td><td id="sumDistance">-</td></tr>
+        <tr><td>Max speed (km/h)</td><td id="sumMaxSpeed">-</td></tr>
+        <tr><td>Max traction force (N)</td><td id="sumMaxForce">-</td></tr>
+        <tr><td>Max wheel power (kW)</td><td id="sumMaxPower">-</td></tr>
+        <tr><td>Peak wheel torque (N·m)</td><td id="sumMaxTorque">-</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="ice-summary">
+    <h2>Summary — ICE Powertrain</h2>
+    <table id="iceSummaryTable">
+      <tbody>
+        <tr><td>Distance (km)</td><td id="iceSumDistance">-</td></tr>
+        <tr><td>Peak engine torque (N·m)</td><td id="iceSumPeakTorque">-</td></tr>
+        <tr><td>Peak engine power (kW)</td><td id="iceSumPeakPower">-</td></tr>
+        <tr><td>Max engine RPM</td><td id="iceSumMaxRpm">-</td></tr>
+        <tr><td>Total fuel used (L)</td><td id="iceSumFuelVolume">-</td></tr>
+        <tr><td>Fuel consumption (L/100km)</td><td id="iceSumFuelConsumption">-</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="bev-summary">
+    <h2>Summary — BEV Powertrain</h2>
+    <table id="bevSummaryTable">
+      <tbody>
+        <tr><td>Distance (km)</td><td id="bevSumDistance">-</td></tr>
+        <tr><td>Peak motor torque (N·m)</td><td id="bevSumPeakTorque">-</td></tr>
+        <tr><td>Peak motor power (kW)</td><td id="bevSumPeakPower">-</td></tr>
+        <tr><td>Final SOC (%)</td><td id="bevSumFinalSoc">-</td></tr>
+        <tr><td>Total energy used (kWh)</td><td id="bevSumTotalEnergy">-</td></tr>
+        <tr><td>Regen energy (kWh)</td><td id="bevSumRegenEnergy">-</td></tr>
+        <tr><td>Consumption (kWh/100km)</td><td id="bevSumConsumption">-</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="hybrid-summary">
+    <h2>Summary — Hybrid Powertrain</h2>
+    <table id="hybridSummaryTable">
+      <tbody>
+        <tr><td>Distance (km)</td><td id="hybridSumDistance">-</td></tr>
+        <tr><td>Peak ICE torque (N·m)</td><td id="hybridSumPeakIceTorque">-</td></tr>
+        <tr><td>Peak motor torque (N·m)</td><td id="hybridSumPeakMotorTorque">-</td></tr>
+        <tr><td>Final SOC (%)</td><td id="hybridSumFinalSoc">-</td></tr>
+        <tr><td>Total fuel used (L)</td><td id="hybridSumFuelVolume">-</td></tr>
+        <tr><td>Regen energy (kWh)</td><td id="hybridSumRegenEnergy">-</td></tr>
+        <tr><td>Fuel consumption (L/100km)</td><td id="hybridSumFuelConsumption">-</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="charts">
+    <h2>Vehicle Dynamics Charts</h2>
+    <div class="chart-container"><canvas id="speedChart"></canvas></div>
+    <div class="chart-container"><canvas id="accelerationChart"></canvas></div>
+    <div class="chart-container"><canvas id="forceChart"></canvas></div>
+    <div class="chart-container"><canvas id="torqueChart"></canvas></div>
+    <div class="chart-container"><canvas id="powerChart"></canvas></div>
+  </section>
+
+  <section id="ice-charts">
+    <h2>ICE Powertrain Charts</h2>
+    <div class="chart-container"><canvas id="engineTorqueChart"></canvas></div>
+    <div class="chart-container"><canvas id="engineRpmChart"></canvas></div>
+    <div class="chart-container"><canvas id="enginePowerChart"></canvas></div>
+    <div class="chart-container"><canvas id="fuelPowerChart"></canvas></div>
+  </section>
+
+  <section id="bev-charts">
+    <h2>BEV Powertrain Charts</h2>
+    <div class="chart-container"><canvas id="bevMotorTorqueChart"></canvas></div>
+    <div class="chart-container"><canvas id="bevMotorRpmChart"></canvas></div>
+    <div class="chart-container"><canvas id="bevBatteryPowerChart"></canvas></div>
+    <div class="chart-container"><canvas id="bevSocChart"></canvas></div>
+  </section>
+
+  <section id="hybrid-charts">
+    <h2>Hybrid Powertrain Charts</h2>
+    <div class="chart-container"><canvas id="hybridIceTorqueChart"></canvas></div>
+    <div class="chart-container"><canvas id="hybridMotorTorqueChart"></canvas></div>
+    <div class="chart-container"><canvas id="hybridBatteryPowerChart"></canvas></div>
+    <div class="chart-container"><canvas id="hybridSocChart"></canvas></div>
+  </section>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/simulation.js"></script>
+</body>
+<div id="app-nav"></div>
+</html>

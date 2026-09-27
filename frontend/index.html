@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Physics Digital Twin Platform</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <div id="app-nav"></div>
+
+  <header id="main-header">
+    <h1>Vehicle Physics Digital Twin Platform</h1>
+    <p class="subtitle">Multi-powertrain vehicle simulation and analysis</p>
+  </header>
+
+  <div id="main-nav-grid">
+    <a href="pages/vehicle.html" class="nav-card">
+      <span class="nav-card-title">Vehicle</span>
+      <span class="nav-card-desc">Single-point physics check (Phase 1)</span>
+    </a>
+
+    <a href="pages/simulation.html" class="nav-card">
+      <span class="nav-card-title">Simulation</span>
+      <span class="nav-card-desc">Run ICE / BEV / Hybrid drive cycle simulations</span>
+    </a>
+
+    <a href="pages/analysis.html" class="nav-card">
+      <span class="nav-card-title">Analysis</span>
+      <span class="nav-card-desc">Energy flow &amp; efficiency breakdown</span>
+    </a>
+
+    <a href="pages/validation.html" class="nav-card">
+  <span class="nav-card-title">Validation</span>
+  <span class="nav-card-desc">Compare model vs real-world data (Phase 7)</span>
+</a>
+
+    <a href="pages/comparison.html" class="nav-card">
+  <span class="nav-card-title">Comparison</span>
+  <span class="nav-card-desc">ICE vs Hybrid vs BEV under identical conditions (Phase 8)</span>
+</a>
+  </div>
+
+  <footer id="main-footer">
+    <p>Backend API status is shown in the navbar above.</p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Model Validation - Phase 7</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/charts.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div id="app-nav"></div>
+
+  <h1>Model Validation</h1>
+  <p class="subtitle">Phase 7: compare model predictions against real-world measured data.</p>
+
+  <section id="upload-section">
+    <h2>Upload Real Vehicle Data (CSV)</h2>
+    <p class="hint">
+      Required columns: <code>time_s</code>, <code>speed_kmh</code>.
+      Optional: <code>soc</code> (for BEV validation), <code>fuel_l</code> (cumulative liters, for ICE validation).
+    </p>
+
+    <label>
+      CSV file
+      <input type="file" id="csvFileInput" accept=".csv">
+    </label>
+
+    <label>
+      Or paste CSV text directly
+      <textarea id="csvTextInput" rows="6" placeholder="time_s,speed_kmh,soc&#10;0,0,0.80&#10;1,10,0.799&#10;..."></textarea>
+    </label>
+
+    <button id="previewBtn">Preview Data</button>
+    <p id="uploadError" class="error"></p>
+  </section>
+
+  <section id="preview-section" style="display: none;">
+    <h2>Data Preview</h2>
+    <table id="previewTable">
+      <tbody>
+        <tr><td>Source</td><td id="prevSource">-</td></tr>
+        <tr><td>Number of points</td><td id="prevPoints">-</td></tr>
+        <tr><td>Duration (s)</td><td id="prevDuration">-</td></tr>
+        <tr><td>Max speed (km/h)</td><td id="prevMaxSpeed">-</td></tr>
+        <tr><td>Available reference columns</td><td id="prevRefColumns">-</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-container">
+      <canvas id="previewSpeedChart"></canvas>
+    </div>
+  </section>
+
+  <section id="vehicle-inputs">
+    <h2>Vehicle Parameters</h2>
+
+    <label>
+      Mass (kg)
+      <input type="number" id="mass" value="1600" step="1">
+    </label>
+
+    <label>
+      Wheel radius (m)
+      <input type="number" id="wheelRadius" value="0.34" step="0.01">
+    </label>
+
+    <label>
+      Drag coefficient Cd (-)
+      <input type="number" id="dragCoefficient" value="0.29" step="0.01">
+    </label>
+
+    <label>
+      Frontal area A (m^2)
+      <input type="number" id="frontalArea" value="2.2" step="0.01">
+    </label>
+
+    <label>
+      Rolling resistance coefficient Crr (-)
+      <input type="number" id="rollingCoefficient" value="0.012" step="0.001">
+    </label>
+  </section>
+
+  <section id="environment-inputs">
+    <h2>Environment</h2>
+
+    <label>
+      Air density (kg/m^3)
+      <input type="number" id="airDensity" value="1.225" step="0.001">
+    </label>
+
+    <label>
+      Road grade (degrees)
+      <input type="number" id="roadGradeDeg" value="0" step="0.1">
+    </label>
+
+    <label>
+      Wind speed (m/s)
+      <input type="number" id="windSpeed" value="0" step="0.1">
+    </label>
+  </section>
+
+  <section id="ice-powertrain-inputs">
+    <h2>ICE Powertrain (for ICE validation)</h2>
+
+    <label>
+      Max engine torque (N·m)
+      <input type="number" id="iceMaxTorque" value="250" step="1">
+    </label>
+
+    <label>
+      Max engine power (kW)
+      <input type="number" id="iceMaxPower" value="110" step="1">
+    </label>
+
+    <label>
+      Gear ratio (-)
+      <input type="number" id="iceGearRatio" value="3.5" step="0.1">
+    </label>
+
+    <label>
+      Final drive ratio (-)
+      <input type="number" id="iceFinalDrive" value="3.9" step="0.1">
+    </label>
+
+    <label>
+      Transmission efficiency (0-1)
+      <input type="number" id="iceTransEff" value="0.92" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Engine efficiency (0-1)
+      <input type="number" id="iceEngineEff" value="0.30" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Fuel type
+      <select id="iceFuelType">
+        <option value="gasoline">Gasoline</option>
+        <option value="diesel">Diesel</option>
+      </select>
+    </label>
+  </section>
+
+  <section id="motor-inputs">
+    <h2>Electric Motor (for BEV validation)</h2>
+
+    <label>
+      Max motor torque (N·m)
+      <input type="number" id="motorMaxTorque" value="300" step="1">
+    </label>
+
+    <label>
+      Max motor power (kW)
+      <input type="number" id="motorMaxPower" value="150" step="1">
+    </label>
+
+    <label>
+      Gear ratio (-)
+      <input type="number" id="motorGearRatio" value="9.0" step="0.1">
+    </label>
+
+    <label>
+      Final drive ratio (-)
+      <input type="number" id="motorFinalDrive" value="1.0" step="0.1">
+    </label>
+
+    <label>
+      Transmission efficiency (0-1)
+      <input type="number" id="motorTransEff" value="0.95" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Motor efficiency (0-1)
+      <input type="number" id="motorEff" value="0.92" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Inverter efficiency (0-1)
+      <input type="number" id="inverterEff" value="0.97" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Regen efficiency (0-1)
+      <input type="number" id="regenEff" value="0.7" step="0.01" min="0" max="1">
+    </label>
+  </section>
+
+  <section id="battery-inputs">
+    <h2>Battery (for BEV validation)</h2>
+
+    <label>
+      Capacity (kWh)
+      <input type="number" id="batteryCapacityBev" value="60" step="1">
+    </label>
+
+    <label>
+      Initial SOC (0-1)
+      <input type="number" id="batteryInitialSoc" value="0.80" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Min SOC (0-1)
+      <input type="number" id="batteryMinSoc" value="0.1" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Max SOC (0-1)
+      <input type="number" id="batteryMaxSoc" value="1.0" step="0.01" min="0" max="1">
+    </label>
+
+    <label>
+      Internal efficiency (0-1)
+      <input type="number" id="batteryInternalEff" value="0.95" step="0.01" min="0" max="1">
+    </label>
+  </section>
+
+  <div class="button-row">
+    <button id="validateBevBtn">Validate BEV (SOC)</button>
+    <button id="validateIceBtn">Validate ICE (Fuel)</button>
+  </div>
+  <p id="validationError" class="error"></p>
+
+  <section id="validation-summary" style="display: none;">
+    <h2>Validation Metrics</h2>
+    <table id="validationTable">
+      <tbody>
+        <tr><td>Quantity compared</td><td id="valQuantity">-</td></tr>
+        <tr><td>MAE (Mean Absolute Error)</td><td id="valMae">-</td></tr>
+        <tr><td>RMSE (Root Mean Squared Error)</td><td id="valRmse">-</td></tr>
+        <tr><td>Max error</td><td id="valMaxError">-</td></tr>
+        <tr><td>Bias (mean signed error)</td><td id="valBias">-</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="validation-charts" style="display: none;">
+    <h2>Model vs Real Data</h2>
+    <div class="chart-container">
+      <canvas id="modelVsRealChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="errorChart"></canvas>
+    </div>
+  </section>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/validation.js"></script>
+</body>
+</html>
